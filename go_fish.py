@@ -10,7 +10,14 @@ random.shuffle(hearts)
 random.shuffle(diamonds)
 fish_pile = list(spades + clubs + hearts + diamonds)
 random.shuffle(fish_pile)
-main_player = {"name": input("What is your name? "), "cards": list(), "books": set()}
+while True:
+    try:
+        player_name: str = input("What is your name? ")
+        if len(player_name) not in range(4, 11): raise ValueError
+        else: break
+    except ValueError:
+        print("Your name must be between 4 to 10 characters.")
+main_player = {"name": player_name, "cards": list(), "books": set()}
 john = {"name": "John", "cards": list(), "books": set()}
 brandon = {"name": "Brandon", "cards": list(), "books": set()}
 jennifer = {"name": "Jennifer", "cards": list(), "books": set()}
@@ -31,13 +38,12 @@ for i in players:
         fish_pile.remove(card)
         random.shuffle(fish_pile)
     i['cards'].sort()
-def collect_books(current_player: dict, rank: str, verb: str, character_name: str):
+def collect_books(current_player: dict, rank: str, verb: str, character_name: str) -> None:
     current_player['books'].add(rank)
     print(character_name + " now " + verb +  " books of " + '  '.join(sorted(list(current_player['books']))))
     while current_player['cards'].count(rank) != 0:
         current_player['cards'].remove(rank)
-        
-def game_over():
+def game_over() -> None:
     print("Game Over!")
     book_lengths = sorted(list())
     for i in players:
@@ -48,12 +54,12 @@ def game_over():
             winner = j['name']
             print(winner + " has won the game!")
             break
-def ran_out_of_cards(current_player: dict, character_name: str):
+def ran_out_of_cards(current_player: dict, character_name: str) -> None:
     for i in fish_pile[:cards_given]:
         current_player['cards'].append(i)
         fish_pile.remove(i)
     print(character_name + " ran out of cards! " + character_name + " got some cards from the fish pile.")
-def opponent_gives_card(opponent: dict, current_player: dict, rank: str, character_name: str):
+def opponent_gives_card(opponent: dict, current_player: dict, rank: str, character_name: str) -> None:
     card_count = 0
     while opponent["cards"].count(rank) != 0:
         current_player['cards'].append(rank)
@@ -62,16 +68,16 @@ def opponent_gives_card(opponent: dict, current_player: dict, rank: str, charact
         opponent["cards"].sort()
         card_count += 1
     print(opponent["name"] + " gives " + character_name + " (" + str(card_count) + ") " + rank + "s")
-def going_fishing(current_player: dict, character_name: str):
+def going_fishing(current_player: dict, character_name: str) -> str:
     fished_card = random.choice(fish_pile)
     current_player['cards'].append(fished_card)
     fish_pile.remove(fished_card)
     current_player['cards'].sort()
     print(character_name + " went fishing and caught a " + fished_card)
     return fished_card
-def show_cards(character_name: str, character_cards: list):
-    print(character_name + "s cards are now:\n" + '  '.join(sorted(character_cards)))
-def run_game():
+def show_cards(current_player: dict) -> None:
+    print(current_player['name'] + "s cards are now:\n" + '  '.join(sorted(current_player['cards'])))
+def run_game() -> None:
     opponent = dict()
     is_game_over = False
     for current_player in players:
@@ -91,6 +97,7 @@ def run_game():
                             print("Invalid input.")
                 else:
                     opponent = players[1]
+                show_cards(main_player)
                 print("Here are your cards:\n", "  ".join(main_player['cards']), "\nIt is your turn")
                 while True:
                     try:
@@ -111,7 +118,7 @@ def run_game():
                                 break
                             elif len(fish_pile) != 0:
                                 ran_out_of_cards(main_player, "You")
-                                show_cards(main_player['name'], main_player['cards'])
+                                show_cards(main_player)
                                 for i in main_player['cards']:
                                     if main_player['cards'].count(i) == 4:
                                         collect_books(main_player, i, "have", "You")
