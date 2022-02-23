@@ -23,6 +23,7 @@ john = {"name": "John", "cards": list(), "books": set(), "is_eliminated": bool(F
 brandon = {"name": "Brandon", "cards": list(), "books": set(), "is_eliminated": bool(False)}
 jennifer = {"name": "Jennifer", "cards": list(), "books": set(), "is_eliminated": bool(False)}
 players = [main_player, john, brandon, jennifer]
+is_game_over = False
 while True:
     try:
         how_many_players = int(input("How many players?\n2\n3\n4\n"))
@@ -45,19 +46,19 @@ def collect_books(current_player: dict, rank: str, verb: str, character_name: st
     while current_player['cards'].count(rank) != 0:
         current_player['cards'].remove(rank)
 def game_over() -> None:
-    print("Game Over!")
-    book_lengths = sorted(list())
-    winners_list = sorted(list())
-    for i in players:
-        book_lengths.append(i['books'])
-        print(i['name'] + "'s books: " + "  ".join(sorted(i['books'])))
-        print(i['name'] + "'s cards: " + "  ".join(sorted(i['cards'])))
-    longest_set = max(book_lengths, key=len)
-    for j in players:
-        if longest_set == j['books']:
-            winner = j['name']
-            print(winner + " has won the game!")
-            # break
+    if is_game_over:
+        print("Game Over!")
+        book_lengths = sorted(list())
+        winners_list = sorted(list())
+        for i in players:
+            book_lengths.append(i['books'])
+            print(i['name'] + "'s books: " + "  ".join(sorted(i['books'])))
+            print(i['name'] + "'s cards: " + "  ".join(sorted(i['cards'])))
+        longest_set = max(book_lengths, key=len)
+        for j in players:
+            if longest_set == j['books']:
+                winner = j['name']
+                print(winner + " has won the game!")
 def ran_out_of_cards(current_player: dict, character_name: str) -> None:
     for i in fish_pile[:cards_given]:
         current_player['cards'].append(i)
@@ -81,25 +82,26 @@ def going_fishing(current_player: dict, character_name: str) -> str:
     return fished_card
 def show_cards(current_player: dict) -> None:
     print(current_player['name'] + "'s cards are now:\n" + '  '.join(sorted(current_player['cards'])))
-def player_eliminated(current_player: dict) -> None:
+def player_eliminated(current_player: dict, active_players: list) -> None:
     print(current_player['name'] + " has been eliminated!")
     current_player['is_eliminated'] = True
+    active_players.remove(current_player)
 def run_game() -> None:
     opponent = dict()
-    is_game_over = False
+    global is_game_over
+    # is_game_over = False
     active_players = [x for x in players if x['is_eliminated'] == False]
+    print(active_players)
     if len(active_players) < 2:
-        game_over()
         is_game_over = True
+        game_over()
     for current_player in active_players:
         if is_game_over:
             break
-        # if len(active_players) < 2:
-        #     game
         if current_player['is_eliminated']:
                     continue
         elif not current_player['cards'] and not fish_pile:
-            player_eliminated(current_player)
+            player_eliminated(current_player, active_players)
             continue
         elif current_player == main_player:
             while is_game_over == False and main_player['is_eliminated'] == False and len(active_players) > 1:
@@ -118,7 +120,6 @@ def run_game() -> None:
                 else:
                     opponent = active_players[1]
                 show_cards(main_player)
-                # print("Here are your cards:\n", "  ".join(main_player['cards']), "\nIt is your turn")
                 while True:
                     try:
                         rank = input("What rank do you want to ask " + opponent["name"] + " for?\n" + "  ".join(sorted(main_player['cards'])) + "\n")
@@ -132,11 +133,8 @@ def run_game() -> None:
                         if main_player['cards'].count(rank) == 4:
                             collect_books(main_player, rank, "have", "You")
                         if not main_player['cards']:
-                        # if len(active_players) < 2:
                             if not fish_pile:
-                                player_eliminated(main_player)
-                                # game_over()
-                                # is_game_over = True
+                                player_eliminated(main_player, active_players)
                                 break
                             elif fish_pile:
                                 ran_out_of_cards(main_player, "You")
@@ -162,74 +160,61 @@ def run_game() -> None:
             elif not fish_pile:
                     print("fish pile is empty")
                     if not main_player['cards'] and len(active_players) > 1:
-                        player_eliminated(main_player)
+                        player_eliminated(main_player, active_players)
                     else:
                         continue
-            # elif not fish_pile and not main_player['cards'] and len(active_players) > 1:
-            #     player_eliminated(main_player)
-            #     continue
-            # elif len(active_players) < 2:
-            #     game_over()
-            #     is_game_over = True
-            #     break
         else:
+            # if is_game_over == True:
+            #     break
+            # if is_game_over == False:
+            print("It is now " + current_player['name'] + "'s turn")
+            opponent = dict()
+            rank = str()
+            other_players = [x for x in active_players if x != current_player]
+            # while is_game_over == False:
+            while True:
+                opponent = random.choice(other_players)
+                for card in current_player['cards']:
+                    if current_player['cards'].count(card) == 3:
+                        rank = card
+                    elif current_player['cards'].count(card) == 2:
+                        rank = card
+                    elif current_player['cards'].count(card) == 1:
+                        rank = card
+                print(current_player['name'] + " asked " + opponent['name'] + " for " + rank)
+                if rank in opponent['cards']:
+                    opponent_gives_card(opponent, current_player, rank, current_player['name'])
+                    if current_player['cards'].count(rank) == 4:
+                        collect_books(current_player, rank, "has", current_player['name'])
+                    if not current_player['cards']:
+                        if not fish_pile:
+                            player_eliminated(current_player, active_players)
+                            break
+                        elif fish_pile:
+                            ran_out_of_cards(current_player, current_player['name'])
+                            for i in current_player['cards']:
+                                if current_player['cards'].count(i) == 4:
+                                    collect_books(current_player, i, "has", current_player['name'])
+                elif rank not in opponent["cards"]:
+                    print(opponent["name"] + " does not have " + rank + ".\nIt is now time for " + current_player['name'] + " to Go Fish!")
+                    break
             if is_game_over == True:
                 break
-            # elif current_player['is_eliminated']:
-            #     continue
-            elif is_game_over == False:
-                print("It is now " + current_player['name'] + "'s turn")
-                opponent = dict()
-                rank = str()
-                other_players = [x for x in active_players if x != current_player]
-                while is_game_over == False:
-                    opponent = random.choice(other_players)
-                    for card in current_player['cards']:
-                        if current_player['cards'].count(card) == 3:
-                            rank = card
-                        elif current_player['cards'].count(card) == 2:
-                            rank = card
-                        elif current_player['cards'].count(card) == 1:
-                            rank = card
-                    print(current_player['name'] + " asked " + opponent['name'] + " for " + rank)
-                    if rank in opponent['cards']:
-                        opponent_gives_card(opponent, current_player, rank, current_player['name'])
-                        if current_player['cards'].count(rank) == 4:
-                            collect_books(current_player, rank, "has", current_player['name'])
-                        if not current_player['cards']:
-                        # if len(active_players) < 2:
-                            if not fish_pile:
-                                player_eliminated(current_player)
-                                # game_over()
-                                # is_game_over = True
-                                break
-                            elif fish_pile:
-                                ran_out_of_cards(current_player, current_player['name'])
-                                for i in current_player['cards']:
-                                    if current_player['cards'].count(i) == 4:
-                                        collect_books(current_player, i, "has", current_player['name'])
-                    elif rank not in opponent["cards"]:
-                        print(opponent["name"] + " does not have " + rank + ".\nIt is now time for " + current_player['name'] + " to Go Fish!")
-                        break
-                if is_game_over == True:
-                    break
-                elif current_player['is_eliminated']:
-                    continue
-                elif fish_pile:
-                    fished_card = going_fishing(current_player, current_player['name'])
-                    if current_player['cards'].count(fished_card) == 4:
-                        collect_books(current_player, fished_card, "has", current_player['name'])
-                elif not fish_pile:
-                    print("fish pile is empty")
-                    if not current_player['cards'] and len(active_players) > 1:
-                        player_eliminated(current_player)
-                    else:
-                        continue
-                # elif not fish_pile and not current_player['cards'] and len(active_players) > 1:
-                #     player_eliminated(current_player)
+            elif current_player['is_eliminated']:
+                continue
+            elif fish_pile:
+                fished_card = going_fishing(current_player, current_player['name'])
+                # if fished_card == rank:
                     
-            # elif current_player['is_eliminated'] == True:
-            #     continue
-    if is_game_over == False:
-        run_game()
-run_game()
+                if current_player['cards'].count(fished_card) == 4:
+                    collect_books(current_player, fished_card, "has", current_player['name'])
+            elif not fish_pile:
+                print("fish pile is empty")
+                if not current_player['cards'] and len(active_players) > 1:
+                    player_eliminated(current_player, active_players)
+                else:
+                    continue
+    # if is_game_over == False:
+    #     run_game()
+while not is_game_over:
+    run_game()
