@@ -104,7 +104,7 @@ def choosing_opponent(active_players: list) -> dict:
                 which_player = int(input("Which player do you want to ask? "))
                 if which_player not in range(1, len(active_players)): raise ValueError
                 else:
-                     return active_players[which_player]
+                    return active_players[which_player]
             except ValueError:
                 print("Invalid input.")
     else:
