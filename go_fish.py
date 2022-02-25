@@ -54,7 +54,6 @@ def game_over() -> None:
             print(i['name'] + "'s books: " + "  ".join(sorted(i['books'])))
             print(i['name'] + "'s cards: " + "  ".join(sorted(i['cards'])))
         longest_set = (max(book_lengths))
-        print(longest_set)
         winners_list: list[str] = [x['name'] for x in players if len(x['books']) == longest_set]
         print(" and ".join(winners_list) + " has won the game!")
 def ran_out_of_cards(current_player: dict, character_name: str) -> None:
@@ -119,7 +118,7 @@ def run_game() -> None:
             player_eliminated(current_player, active_players)
             continue
         if not current_player['is_eliminated']:
-            if current_player == main_player:
+            if current_player is main_player:
                 while True:
                     opponent = choosing_opponent(active_players)
                     show_cards(main_player)
