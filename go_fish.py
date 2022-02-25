@@ -1,5 +1,6 @@
 import random
 import sys
+var: str = 1
 
 spades = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a']
 clubs = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a']
@@ -18,12 +19,12 @@ while True:
         else: break
     except ValueError:
         print("Your name must be between 4 to 10 characters.")
-main_player = {"name": player_name, "cards": list(), "books": set(), "is_eliminated": bool(False)}
-john = {"name": "John", "cards": list(), "books": set(), "is_eliminated": bool(False)}
-brandon = {"name": "Brandon", "cards": list(), "books": set(), "is_eliminated": bool(False)}
-jennifer = {"name": "Jennifer", "cards": list(), "books": set(), "is_eliminated": bool(False)}
+main_player: dict = {"name": player_name, "cards": list(), "books": set(), "is_eliminated": bool(False)}
+john: dict = {"name": "John", "cards": list(), "books": set(), "is_eliminated": bool(False)}
+brandon: dict = {"name": "Brandon", "cards": list(), "books": set(), "is_eliminated": bool(False)}
+jennifer: dict = {"name": "Jennifer", "cards": list(), "books": set(), "is_eliminated": bool(False)}
 players = [main_player, john, brandon, jennifer]
-is_game_over = False
+is_game_over = bool(False)
 while True:
     try:
         how_many_players = int(input("How many players?\n2\n3\n4\n"))
@@ -49,15 +50,15 @@ def game_over() -> None:
     if is_game_over:
         print("Game Over!")
         book_lengths = sorted(list())
-        # winners_list = sorted(list())
         for i in players:
             book_lengths.append(i['books'])
             print(i['name'] + "'s books: " + "  ".join(sorted(i['books'])))
             print(i['name'] + "'s cards: " + "  ".join(sorted(i['cards'])))
-        # longest_set = max(book_lengths, key=len)
-        winners_list = [x for x in players if len(x['books']) == max(book_lengths, key=len)]
-        for x in winners_list:
-            print(x['name'] + " has won the game!")
+        longest_set: set = (max(book_lengths, key=len))
+        winners_list: list[str] = [x['name'] for x in players if len(x['books']) == len(longest_set)]
+        print(" and ".join(winners_list) + " has won the game!")
+        # for x in winners_list:
+        #     print(x['name'] + " has won the game!")
         # for j in players:
         #     if longest_set == j['books']:
         #         winner = j['name']
@@ -114,11 +115,11 @@ def choosing_opponent(active_players: list) -> dict:
         return active_players[1]
 def run_game() -> None:
     opponent = dict()
+    rank = str()
     global is_game_over
     active_players = [x for x in players if x['is_eliminated'] == False]
-    print(active_players)
     if len(active_players) < 2:
-        is_game_over = True
+        is_game_over = bool(True)
     for current_player in active_players:
         if not current_player['cards'] and not fish_pile:
             player_eliminated(current_player, active_players)
@@ -165,6 +166,8 @@ def run_game() -> None:
                 other_players = [x for x in active_players if x != current_player]
                 while True:
                     opponent = random.choice(other_players)
+                    rank: str
+                    card: str
                     for card in current_player['cards']:
                         if current_player['cards'].count(card) == 3:
                             rank = card
