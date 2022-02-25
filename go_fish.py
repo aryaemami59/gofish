@@ -49,16 +49,19 @@ def game_over() -> None:
     if is_game_over:
         print("Game Over!")
         book_lengths = sorted(list())
-        winners_list = sorted(list())
+        # winners_list = sorted(list())
         for i in players:
             book_lengths.append(i['books'])
             print(i['name'] + "'s books: " + "  ".join(sorted(i['books'])))
             print(i['name'] + "'s cards: " + "  ".join(sorted(i['cards'])))
-        longest_set = max(book_lengths, key=len)
-        for j in players:
-            if longest_set == j['books']:
-                winner = j['name']
-                print(winner + " has won the game!")
+        # longest_set = max(book_lengths, key=len)
+        winners_list = [x for x in players if len(x['books']) == max(book_lengths, key=len)]
+        for x in winners_list:
+            print(x['name'] + " has won the game!")
+        # for j in players:
+        #     if longest_set == j['books']:
+        #         winner = j['name']
+        #         print(winner + " has won the game!")
 def ran_out_of_cards(current_player: dict, character_name: str) -> None:
     for i in fish_pile[:cards_given]:
         current_player['cards'].append(i)
