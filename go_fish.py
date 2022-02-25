@@ -1,6 +1,5 @@
 import random
 import sys
-var: str = 1
 
 spades = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a']
 clubs = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k', 'a']
@@ -166,7 +165,6 @@ def run_game() -> None:
                 other_players = [x for x in active_players if x != current_player]
                 while True:
                     opponent = random.choice(other_players)
-                    rank: str
                     card: str
                     for card in current_player['cards']:
                         if current_player['cards'].count(card) == 3:
