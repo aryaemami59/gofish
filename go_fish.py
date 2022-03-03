@@ -24,8 +24,6 @@ class Player():
         self.cards = list()
         self.is_eliminated = bool(False)
         self.books = set()
-        # self.other_opponents = [
-        #     x for x in game.active_players if x is not self]
 
     def change_other_opponents(self):
         self.other_opponents = [
@@ -38,14 +36,12 @@ class Player():
     def turn(self):
         if not self.is_eliminated:
             print("It is now " + self.name + "'s turn")
-            # self.other_opponents()
-            # self.change_other_opponents()
+            self.change_other_opponents()
             self.choose_opponent()
             self.choose_rank()
-            self.ask_for_rank()
+            # self.ask_for_rank()
             self.if_opponent_does_not_have_rank()
             self.if_opponent_has_rank()
-            # self.collect_books(self.rank)
 
     def choose_rank(self):
         for card in self.cards:
@@ -55,6 +51,7 @@ class Player():
                 self.rank = card
             else:
                 self.rank = card
+        self.ask_for_rank()
 
     def ask_for_rank(self):
         print(self.name + " asked " + self.opponent.name + " for " + self.rank)
@@ -82,11 +79,16 @@ class Player():
     def collect_books(self, rank):
         if self.cards.count(rank) == 4:
             self.books.add(rank)
+            self.collect_books_message()
             self.remove_rank(rank)
             self.check_for_elimination()
             self.check_if_out_of_cards()
             self.opponent.check_for_elimination()
             self.opponent.check_if_out_of_cards()
+
+    def collect_books_message(self):
+        print(self.name + " now has books of " +
+              "  ".join(sorted(list(self.books), key=sort_cards)))
 
     def check_for_books(self):
         for card in self.cards:
@@ -112,12 +114,16 @@ class Player():
     def check_if_out_of_cards(self):
         if not self.cards and fish_pile:
             self.get_cards_from_fish_pile()
-            self.got_cards_from_fish_pile_message()
+            # self.got_cards_from_fish_pile_message()
+
+    def out_of_cards_message(self):
+        pass
 
     def get_cards_from_fish_pile(self):
         for card in fish_pile[:self.cards_given]:
             self.cards.append(card)
             fish_pile.remove(card)
+        self.got_cards_from_fish_pile_message()
 
     def got_cards_from_fish_pile_message(self):
         print(self.name + " ran out of cards! " + self.name +
@@ -130,7 +136,7 @@ class Player():
         if self.rank not in self.opponent.cards:
             self.opponent_does_not_have_rank_message()
             self.going_fishing()
-            self.fish_pile_is_empty()
+            self.if_fish_pile_is_empty()
 
     def opponent_does_not_have_rank_message(self):
         print(self.opponent.name + " does not have " + self.rank + ".")
@@ -161,7 +167,7 @@ class Player():
     def if_fished_card_not_same_as_rank_message(self):
         print(self.name + " went fishing and did not catch a " + self.rank)
 
-    def fish_pile_is_empty(self):
+    def if_fish_pile_is_empty(self):
         if self.cards and not fish_pile:
             self.fish_pile_is_empty_message()
 
@@ -200,7 +206,6 @@ class Game():
     def __init__(self) -> None:
         self.players: list[Player] = [me, john, brandon, jennifer]
         self.is_game_over = bool(False)
-        # self.players = [MainPlayer("me")]
 
     def how_many_players(self):
         while True:
@@ -247,22 +252,18 @@ class Game():
             x.name for x in self.players if len(x.books) == longest_set]
         print(" and ".join(winners_list) + " have won the game!")
 
-    def start_game(self):
-        self.give_cards()
-
     def single_run(self):
         self.set_active_players()
+        self.check_for_game_over()
         for player in self.active_players:
             self.set_active_players()
             self.check_for_game_over()
             if self.is_game_over:
                 break
             player.turn()
-            if player.is_eliminated:
-                continue
 
-    def full_run(self):
-        self.start_game()
+    def run_game(self):
+        self.give_cards()
         while not self.is_game_over:
             self.single_run()
 
@@ -277,7 +278,7 @@ class Game():
         # ), "books": set(), "is_eliminated": bool(False)}
         # players = [main_player, john, brandon, jennifer]
         # players = list()
-is_game_over = bool(False)
+# is_game_over = bool(False)
 
 
 def sort_cards(card: str):
@@ -306,7 +307,7 @@ def sort_cards(card: str):
 game = Game()
 # game.give_cards()
 # game.single_run()
-game.full_run()
+game.run_game()
 # amount_of_cards_given = {2: 7, 3: 6, 4: 5}
 # players = players[:how_many_players]
 # cards_given = amount_of_cards_given[how_many_players]
