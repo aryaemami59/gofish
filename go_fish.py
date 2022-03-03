@@ -8,14 +8,6 @@ diamonds = clubs.copy()
 
 fish_pile = list(spades + clubs + hearts + diamonds)
 shuffle(fish_pile)
-# while True:
-#     try:
-#         player_name: str = input("What is your name? ")
-#         if len(player_name) not in range(4, 11):
-#             raise ValueError
-#         break
-#     except ValueError:
-#         print("Your name must be between 4 to 10 characters.")
 
 
 class Player():
@@ -36,10 +28,8 @@ class Player():
     def turn(self):
         if not self.is_eliminated:
             print("It is now " + self.name + "'s turn")
-            self.change_other_opponents()
             self.choose_opponent()
             self.choose_rank()
-            # self.ask_for_rank()
             self.if_opponent_does_not_have_rank()
             self.if_opponent_has_rank()
 
@@ -93,10 +83,6 @@ class Player():
     def check_for_books(self):
         for card in self.cards:
             self.collect_books(card)
-        self.check_for_elimination()
-        self.check_if_out_of_cards()
-        self.opponent.check_for_elimination()
-        self.opponent.check_if_out_of_cards()
 
     def sort_my_cards(self):
         self.cards.sort(key=sort_cards)
@@ -114,7 +100,6 @@ class Player():
     def check_if_out_of_cards(self):
         if not self.cards and fish_pile:
             self.get_cards_from_fish_pile()
-            # self.got_cards_from_fish_pile_message()
 
     def out_of_cards_message(self):
         pass
@@ -162,10 +147,10 @@ class Player():
             self.if_fished_card_not_same_as_rank_message()
 
     def if_fished_card_same_as_rank_message(self):
-        print(self.name + " went fishing and caught a " + self.rank)
+        print(self.name + " went fishing and caught a(n) " + self.rank)
 
     def if_fished_card_not_same_as_rank_message(self):
-        print(self.name + " went fishing and did not catch a " + self.rank)
+        print(self.name + " went fishing and did not catch a(n) " + self.rank)
 
     def if_fish_pile_is_empty(self):
         if self.cards and not fish_pile:
@@ -194,6 +179,38 @@ class MainPlayer(Player):
     def show_cards(self):
         self.sort_my_cards()
         print("Your cards are now:\n" + "  ".join(self.cards))
+
+    def choose_opponent(self):
+        self.change_other_opponents()
+        if len(self.other_opponents) > 1:
+            for opponent in self.other_opponents:
+                print(str(self.other_opponents.index(opponent) + 1) + ") " +
+                      opponent.name)
+            while True:
+                try:
+                    which_player = int(
+                        input("Which player do you want to ask? "))
+                    if which_player not in range(1, len(self.other_opponents) + 1):
+                        raise ValueError
+                    break
+                except ValueError:
+                    print("Invalid input.")
+            self.opponent = self.other_opponents[which_player - 1]
+        else:
+            self.opponent = self.other_opponents[0]
+
+    def choose_rank(self):
+        while True:
+            try:
+                rank = input("What rank do you want to ask " +
+                             self.opponent.name + " for?\n" + "  ".join(self.cards) + "\n")
+                if rank not in self.cards:
+                    raise ValueError
+                break
+            except ValueError:
+                print("You do not have the selected rank")
+        print("You asked " + self.opponent.name + " for: " + rank)
+        self.rank = rank
 
 
 me = MainPlayer("me")
