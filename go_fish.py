@@ -25,9 +25,12 @@ class Player():
         self.change_other_opponents()
         self.opponent: Player = choice(self.other_opponents)
 
+    def turn_message(self):
+        print("It is now " + self.name + "'s turn")
+
     def turn(self):
         if not self.is_eliminated:
-            print("It is now " + self.name + "'s turn")
+            self.turn_message()
             self.choose_opponent()
             self.choose_rank()
             self.if_opponent_does_not_have_rank()
@@ -44,7 +47,11 @@ class Player():
         self.ask_for_rank()
 
     def ask_for_rank(self):
-        print(self.name + " asked " + self.opponent.name + " for " + self.rank)
+        if self.opponent is not me:
+            print(self.name + " asked " +
+                  self.opponent.name + " for " + self.rank)
+        else:
+            print(self.name + " asked You for " + self.rank)
 
     def if_opponent_has_rank(self):
         if self.rank in self.opponent.cards:
@@ -63,8 +70,12 @@ class Player():
         self.turn()
 
     def opponent_gives_card_message(self, card_count):
-        print(self.opponent.name + " gives " +
-              self.name + " (" + str(card_count) + ") " + self.rank + "s")
+        if self.opponent is not me:
+            print(self.opponent.name + " gives " + self.name +
+                  " (" + str(card_count) + ") " + self.rank + "s")
+        else:
+            print("You give " + self.name +
+                  " (" + str(card_count) + ") " + self.rank + "s")
 
     def collect_books(self, rank):
         if self.cards.count(rank) == 4:
@@ -99,19 +110,21 @@ class Player():
 
     def check_if_out_of_cards(self):
         if not self.cards and fish_pile:
+            self.out_of_cards_message()
             self.get_cards_from_fish_pile()
 
     def out_of_cards_message(self):
-        pass
+        print(self.name + " has run out of cards!")
 
     def get_cards_from_fish_pile(self):
         for card in fish_pile[:self.cards_given]:
             self.cards.append(card)
             fish_pile.remove(card)
+        self.out_of_cards_message()
         self.got_cards_from_fish_pile_message()
 
     def got_cards_from_fish_pile_message(self):
-        print(self.name + " ran out of cards! " + self.name +
+        print(self.name +
               " got some cards from the fish pile.")
 
     def elimination_message(self):
@@ -124,7 +137,10 @@ class Player():
             self.if_fish_pile_is_empty()
 
     def opponent_does_not_have_rank_message(self):
-        print(self.opponent.name + " does not have " + self.rank + ".")
+        if self.opponent is not me:
+            print(self.opponent.name + " does not have " + self.rank + ".")
+        else:
+            print("You do not have " + self.rank + ".")
 
     def going_fishing(self):
         if fish_pile:
@@ -212,6 +228,35 @@ class MainPlayer(Player):
         print("You asked " + self.opponent.name + " for: " + rank)
         self.rank = rank
 
+    def collect_books_message(self):
+        print("You now have books of " +
+              "  ".join(sorted(list(self.books), key=sort_cards)))
+
+    def out_of_cards_message(self):
+        print("You have run out of cards!")
+
+    def got_cards_from_fish_pile_message(self):
+        print("You got some cards from the fish pile.")
+
+    def elimination_message(self):
+        print("You have been eliminated!")
+
+    def going_fishing_message(self):
+        print("It is now time for You to Go Fish!")
+
+    def if_fished_card_same_as_rank_message(self):
+        print("You went fishing and caught a(n) " + self.rank)
+
+    def if_fished_card_not_same_as_rank_message(self):
+        print("You went fishing and did not catch a(n) " + self.rank)
+
+    def turn_message(self):
+        print("It is now your turn")
+
+    def opponent_gives_card_message(self, card_count):
+        print(self.opponent.name + " gives You (" +
+              str(card_count) + ") " + self.rank + "s")
+
 
 me = MainPlayer("me")
 john = Player("John")
@@ -284,17 +329,21 @@ class Game():
         while not self.is_game_over:
             self.single_run()
 
-    # def
-        # main_player: dict = {"name": player_name, "cards": list(
-        # ), "books": set(), "is_eliminated": bool(False)}
-        # john: dict = {"name": "John", "cards": list(), "books": set(),
-        #               "is_eliminated": bool(False)}
-        # brandon: dict = {"name": "Brandon", "cards": list(
-        # ), "books": set(), "is_eliminated": bool(False)}
-        # jennifer: dict = {"name": "Jennifer", "cards": list(
-        # ), "books": set(), "is_eliminated": bool(False)}
-        # players = [main_player, john, brandon, jennifer]
-        # players = list()
+
+game = Game()
+game.run_game()
+
+# def
+# main_player: dict = {"name": player_name, "cards": list(
+# ), "books": set(), "is_eliminated": bool(False)}
+# john: dict = {"name": "John", "cards": list(), "books": set(),
+#               "is_eliminated": bool(False)}
+# brandon: dict = {"name": "Brandon", "cards": list(
+# ), "books": set(), "is_eliminated": bool(False)}
+# jennifer: dict = {"name": "Jennifer", "cards": list(
+# ), "books": set(), "is_eliminated": bool(False)}
+# players = [main_player, john, brandon, jennifer]
+# players = list()
 # is_game_over = bool(False)
 
 
@@ -321,10 +370,6 @@ def sort_cards(card: str):
 #         break
 #     except ValueError:
 #         print("Invalid input. Please enter a valid number")
-game = Game()
-# game.give_cards()
-# game.single_run()
-game.run_game()
 # amount_of_cards_given = {2: 7, 3: 6, 4: 5}
 # players = players[:how_many_players]
 # cards_given = amount_of_cards_given[how_many_players]
