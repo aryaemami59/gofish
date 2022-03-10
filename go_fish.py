@@ -32,8 +32,8 @@ class Player():
             self.turn_message()
             self.choose_opponent()
             self.choose_rank()
-            self.if_opponent_does_not_have_rank()
-            self.if_opponent_has_rank()
+            self.check_if_opponent_does_not_have_rank()
+            self.check_if_opponent_has_rank()
 
     def choose_rank(self) -> None:
         for card in self.cards:
@@ -51,7 +51,7 @@ class Player():
         else:
             print(self.name + " asked You for " + self.rank)
 
-    def if_opponent_has_rank(self) -> None:
+    def check_if_opponent_has_rank(self) -> None:
         if self.rank in self.opponent.cards:
             self.opponent_gives_card()
 
@@ -106,11 +106,11 @@ class Player():
         self.out_of_cards_message()
         self.got_cards_from_fish_pile_message()
 
-    def if_opponent_does_not_have_rank(self) -> None:
+    def check_if_opponent_does_not_have_rank(self) -> None:
         if self.rank not in self.opponent.cards:
             self.opponent_does_not_have_rank_message()
             self.going_fishing()
-            self.if_fish_pile_is_empty()
+            self.check_if_fish_pile_is_empty()
 
     def going_fishing(self) -> None:
         if fish_pile:
@@ -129,7 +129,7 @@ class Player():
         else:
             self.if_fished_card_not_same_as_rank_message()
 
-    def if_fish_pile_is_empty(self) -> None:
+    def check_if_fish_pile_is_empty(self) -> None:
         if self.cards and not fish_pile:
             self.fish_pile_is_empty_message()
 
