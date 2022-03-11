@@ -196,6 +196,17 @@ class MainPlayer(Player):
         self.sort_my_cards()
         print("Your cards are now:\n" + "  ".join(self.cards))
 
+    def ask_which_player(self) -> None:
+        while True:
+            try:
+                which_player = int(input("Which player do you want to ask? "))
+                if which_player not in range(1, len(self.other_opponents) + 1):
+                    raise ValueError
+                break
+            except ValueError:
+                print("Invalid input.")
+        self.opponent = self.other_opponents[which_player - 1]
+
     # These are the methods that are different in the subclass.
     def choose_opponent(self) -> None:
         self.change_other_opponents()
@@ -203,17 +214,7 @@ class MainPlayer(Player):
             for opponent in self.other_opponents:
                 message = str(self.other_opponents.index(opponent) + 1)
                 print(message + ") " + opponent.name)
-            while True:
-                try:
-                    which_player = int(
-                        input("Which player do you want to ask? "))
-                    if which_player not in range(
-                            1, len(self.other_opponents) + 1):
-                        raise ValueError
-                    break
-                except ValueError:
-                    print("Invalid input.")
-            self.opponent = self.other_opponents[which_player - 1]
+            self.ask_which_player()
         else:
             self.opponent = self.other_opponents[0]
 
@@ -274,11 +275,12 @@ class Game():
     def how_many_players(self) -> int:
         while True:
             try:
-                number_of_players = int(input("How many players?\n2\n3\n4\n"))
+                number_of_players: int = int(
+                    input("How many players?\n2\n3\n4\n"))
                 if number_of_players not in range(2, 5):
                     raise ValueError
                 return number_of_players
-            except ValueError:
+            except (ValueError, TypeError):
                 print("Invalid input. Please enter a valid number")
 
     def give_cards(self) -> None:
