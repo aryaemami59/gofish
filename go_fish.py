@@ -14,9 +14,9 @@ def sort_cards(card: str):
 
 class Player():
     def __init__(self, name: str) -> None:
-        self.name = name
+        self.name: str = name
         self.cards: list[str] = list()
-        self.is_eliminated = bool(False)
+        self.is_eliminated: bool = bool(False)
         self.books: set[str] = set()
 
     def change_other_opponents(self) -> None:
@@ -47,9 +47,9 @@ class Player():
 
     def ask_for_rank(self) -> None:
         if self.opponent is not me:
-            print(self.name, "asked", self.opponent.name, "for", self.rank)
+            print(f"{self.name} asked {self.opponent.name} for {self.rank}")
         else:
-            print(self.name + " asked You for " + self.rank)
+            print(f"{self.name} asked You for {self.rank}")
 
     def check_if_opponent_has_rank(self) -> None:
         if self.rank in self.opponent.cards:
@@ -135,42 +135,42 @@ class Player():
 
     # These methods are print statements, some will change in subclass.
     def turn_message(self) -> None:
-        print("It is now " + self.name + "'s turn")
+        print(f"It is now {self.name}'s turn")
 
     def opponent_gives_card_message(self, card_count: int) -> None:
-        message = (self.name + " (" + str(card_count) + ") " + self.rank + "s")
+        message = (f"{self.name} ( {card_count} ) {self.rank}s")
         if self.opponent is not me:
-            print(self.opponent.name + " gives " + message)
+            print(f"{self.opponent.name} gives {message}")
         else:
-            print("You give " + message)
+            print(f"You give {message}")
 
     def collect_books_message(self) -> None:
         books_sorted = ("  ".join(sorted(list(self.books), key=sort_cards)))
-        print(self.name + " now has books of " + books_sorted)
+        print(f"{self.name} now has books of {books_sorted}")
 
     def out_of_cards_message(self) -> None:
-        print(self.name + " has run out of cards!")
+        print(f"{self.name} has run out of cards!")
 
     def got_cards_from_fish_pile_message(self) -> None:
-        print(self.name + " got some cards from the fish pile.")
+        print(f"{self.name} got some cards from the fish pile.")
 
     def elimination_message(self) -> None:
-        print(self.name + " has been eliminated!")
+        print(f"{self.name} has been eliminated!")
 
     def opponent_does_not_have_rank_message(self) -> None:
         if self.opponent is not me:
-            print(self.opponent.name + " does not have " + self.rank + ".")
+            print(f"{self.opponent.name} does not have {self.rank}.")
         else:
-            print("You do not have " + self.rank + ".")
+            print(f"You do not have {self.rank}.")
 
     def going_fishing_message(self) -> None:
-        print("It is now time for " + self.name + " to Go Fish!")
+        print(f"It is now time for {self.name} to Go Fish!")
 
     def if_fished_card_same_as_rank_message(self) -> None:
-        print(self.name + " went fishing and caught a(n) " + self.rank)
+        print(f"{self.name} went fishing and caught a(n) {self.rank}")
 
     def if_fished_card_not_same_as_rank_message(self) -> None:
-        print(self.name + " went fishing and did not catch a(n) " + self.rank)
+        print(f"{self.name} went fishing and did not catch a(n) {self.rank}")
 
     def fish_pile_is_empty_message(self) -> None:
         print("Fish pile is empty")
@@ -194,7 +194,7 @@ class MainPlayer(Player):
 
     def show_cards(self) -> None:
         self.sort_my_cards()
-        print("Your cards are now:\n" + "  ".join(self.cards))
+        print(f"Your cards are now:\n{'  '.join(self.cards)}")
 
     def ask_which_player(self) -> None:
         while True:
@@ -219,21 +219,21 @@ class MainPlayer(Player):
             self.opponent = self.other_opponents[0]
 
     def choose_rank(self) -> None:
-        message = self.opponent.name + " for?\n" + "  ".join(self.cards) + "\n"
+        message = f"{self.opponent.name} for?\n{'  '.join(self.cards)}\n"
         while True:
             try:
-                rank = input("What rank do you want to ask " + message)
+                rank = input(f"What rank do you want to ask {message}")
                 if rank not in self.cards:
                     raise ValueError
                 break
             except ValueError:
                 print("You do not have the selected rank")
-        print("You asked " + self.opponent.name + " for: " + rank)
+        print(f"You asked {self.opponent.name} for: {rank}")
         self.rank = rank
 
     def collect_books_message(self) -> None:
-        books_sorted = ("  ".join(sorted(list(self.books), key=sort_cards)))
-        print("You now have books of " + books_sorted)
+        books_sorted = f"{'  '.join(sorted(list(self.books), key=sort_cards))}"
+        print(f"You now have books of {books_sorted}")
 
     def out_of_cards_message(self) -> None:
         print("You have run out of cards!")
@@ -248,17 +248,17 @@ class MainPlayer(Player):
         print("It is now time for You to Go Fish!")
 
     def if_fished_card_same_as_rank_message(self) -> None:
-        print("You went fishing and caught a(n) " + self.rank)
+        print(f"You went fishing and caught a(n) {self.rank}")
 
     def if_fished_card_not_same_as_rank_message(self) -> None:
-        print("You went fishing and did not catch a(n) " + self.rank)
+        print(f"You went fishing and did not catch a(n) {self.rank}")
 
     def turn_message(self) -> None:
         print("It is now your turn")
 
     def opponent_gives_card_message(self, card_count: int) -> None:
-        message = (" gives You (" + str(card_count) + ") " + self.rank + "s")
-        print(self.opponent.name + message)
+        message = (f" gives You ({card_count}) {self.rank}s")
+        print(f"{self.opponent.name} {message}")
 
 
 me = MainPlayer("me")
@@ -311,11 +311,11 @@ class Game():
         for player in self.players:
             book_lengths.append(len(player.books))
             books_sorted = "  ".join(sorted(player.books, key=sort_cards))
-            print(player.name + "'s books: " + books_sorted)
+            print(f"{player.name}'s books: {books_sorted}")
         longest_set = max(book_lengths)
         winners_list: list[str] = [
             x.name for x in self.players if len(x.books) == longest_set]
-        print(" and ".join(winners_list) + " won the game!")
+        print(f"{' and '.join(winners_list)} won the game!")
 
     def single_run(self) -> None:
         self.set_active_players()
