@@ -138,7 +138,7 @@ class Player():
         print(f"It is now {self.name}'s turn")
 
     def opponent_gives_card_message(self, card_count: int) -> None:
-        message = (f"{self.name} ( {card_count} ) {self.rank}s")
+        message = (f"{self.name} ({card_count}) {self.rank}s")
         if self.opponent is not me:
             print(f"{self.opponent.name} gives {message}")
         else:
